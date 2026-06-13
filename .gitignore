@@ -1,8 +1,4 @@
 node_modules/
-npm-debug.log
 .env
-.env.local
-.DS_Store
-dist/
-build/
 *.log
+.DS_Store
