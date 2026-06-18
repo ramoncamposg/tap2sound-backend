@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tap2Sound · Panel Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Hanken+Grotesk:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0e0c;
+    --panel: #161814;
+    --panel-2: #1d201a;
+    --line: #2c302a;
+    --ink: #eef0e8;
+    --muted: #8d927f;
+    --accent: #c6f24e;
+    --accent-dim: #97b73a;
+    --danger: #ff6b54;
+    --warn: #ffb454;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Hanken Grotesk', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 12% -10%, rgba(198,242,78,0.08), transparent 40%),
+      radial-gradient(circle at 100% 0%, rgba(255,180,84,0.05), transparent 35%);
+  }
+  .mono { font-family: 'Martian Mono', monospace; letter-spacing: -0.03em; }
+  h1, h2 { font-family: 'Syne', sans-serif; letter-spacing: -0.02em; }
+
+  /* ---- Login ---- */
+  #login {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 34px;
+  }
+  #login .card { width: 100%; max-width: 380px; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent);
+         box-shadow: 0 0 14px var(--accent); }
+  .brand h1 { font-size: 22px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 16px 0 6px;
+          text-transform: uppercase; letter-spacing: 0.08em; }
+  input {
+    width: 100%; background: var(--bg); border: 1px solid var(--line);
+    color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 15px;
+    font-family: inherit; transition: border-color .15s;
+  }
+  input:focus { outline: none; border-color: var(--accent-dim); }
+  button {
+    font-family: inherit; cursor: pointer; border: none; border-radius: 10px;
+    font-weight: 600; transition: transform .08s, filter .15s;
+  }
+  button:active { transform: translateY(1px); }
+  .btn-primary {
+    width: 100%; margin-top: 24px; background: var(--accent); color: #14160e;
+    padding: 13px; font-size: 15px;
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .err { color: var(--danger); font-size: 13px; margin-top: 14px; min-height: 18px; }
+
+  /* ---- Dashboard ---- */
+  #app { display: none; max-width: 1180px; margin: 0 auto; padding: 28px 22px 80px; }
+  header.bar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 8px;
+  }
+  header.bar h1 { font-size: 26px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .actions-top { display: flex; gap: 10px; }
+  .btn-ghost {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
+    padding: 9px 16px; font-size: 14px;
+  }
+  .btn-ghost:hover { border-color: var(--accent-dim); }
+  .toolbar { margin: 22px 0 14px; }
+  #search {
+    width: 100%; background: var(--panel); border: 1px solid var(--line);
+    padding: 13px 16px; border-radius: 12px; color: var(--ink); font-size: 15px;
+  }
+  #search:focus { outline: none; border-color: var(--accent-dim); }
+
+  .rows { display: flex; flex-direction: column; gap: 12px; }
+  .assoc {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 20px; opacity: 0; transform: translateY(8px);
+    animation: rise .4s ease forwards;
+  }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .assoc-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .ids { display: flex; flex-direction: column; gap: 6px; }
+  .id-line { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); min-width: 34px;
+  }
+  .id-val { font-size: 14px; color: var(--ink); }
+  .name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; }
+  .name.unnamed { color: var(--muted); font-weight: 400; font-style: italic; }
+  .row-actions { display: flex; gap: 8px; align-items: flex-start; }
+  .mini {
+    padding: 7px 12px; font-size: 12.5px; border-radius: 8px;
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
+  }
+  .mini:hover { border-color: var(--accent-dim); }
+  .mini.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+  .users { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line);
+           display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .users-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                 letter-spacing: 0.08em; margin-right: 4px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    padding: 6px 8px 6px 12px; border-radius: 999px; font-size: 13px;
+  }
+  .chip .x {
+    cursor: pointer; width: 18px; height: 18px; border-radius: 50%;
+    display: grid; place-items: center; color: var(--muted);
+    background: var(--bg); font-size: 13px; line-height: 1;
+  }
+  .chip .x:hover { color: var(--danger); }
+  .no-users { color: var(--warn); font-size: 13px; }
+  .empty { text-align: center; color: var(--muted); padding: 60px 0; }
+  .created { color: var(--muted); font-size: 12px; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="card">
+    <div class="brand"><span class="dot"></span><h1>Tap2Sound</h1></div>
+    <p class="sub">Panel de administración</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username" placeholder="admin@ejemplo.com" />
+    <label for="password">Contraseña</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+    <button class="btn-primary" onclick="doLogin()">Entrar</button>
+    <p class="err" id="loginErr"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="app">
+  <header class="bar">
+    <div>
+      <h1>Asociaciones NFC + MAC</h1>
+      <p class="meta" id="meta">—</p>
+    </div>
+    <div class="actions-top">
+      <button class="btn-ghost" onclick="loadData()">Actualizar</button>
+      <button class="btn-ghost" onclick="logout()">Salir</button>
+    </div>
+  </header>
+  <div class="toolbar">
+    <input id="search" placeholder="Buscar por email, NFC UID o MAC..." oninput="render()" />
+  </div>
+  <div class="rows" id="rows"></div>
+</div>
+
+<script>
+  let TOKEN = null;
+  let DATA = [];
+
+  async function api(path, options = {}) {
+    const opts = Object.assign({ headers: {} }, options);
+    opts.headers['Content-Type'] = 'application/json';
+    if (TOKEN) opts.headers['Authorization'] = 'Bearer ' + TOKEN;
+    const res = await fetch(path, opts);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || ('Error ' + res.status));
+    return body;
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errEl = document.getElementById('loginErr');
+    errEl.textContent = '';
+    try {
+      const r = await api('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+      });
+      if (!r.user || !r.user.isAdmin) {
+        errEl.textContent = 'Esta cuenta no tiene permisos de administrador.';
+        return;
+      }
+      TOKEN = r.token;
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadData();
+    } catch (e) {
+      errEl.textContent = e.message;
+    }
+  }
+
+  function logout() {
+    TOKEN = null; DATA = [];
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login').style.display = 'flex';
+    document.getElementById('password').value = '';
+  }
+
+  async function loadData() {
+    try {
+      const r = await api('/admin/api/associations');
+      DATA = r.associations || [];
+      document.getElementById('meta').textContent =
+        DATA.length + ' altavoz(es) registrados';
+      render();
+    } catch (e) {
+      if (String(e.message).includes('403') || String(e.message).includes('Admin')) logout();
+      else alert(e.message);
+    }
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  function render() {
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    const rows = document.getElementById('rows');
+    const filtered = DATA.filter(a => {
+      if (!q) return true;
+      const hay = [a.nfcUid, a.btMac, a.name, ...a.users.map(u => u.email)]
+        .join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+    if (filtered.length === 0) {
+      rows.innerHTML = '<div class="empty">Sin resultados</div>';
+      return;
+    }
+    rows.innerHTML = filtered.map((a, i) => {
+      const created = new Date(a.createdAt).toLocaleDateString('es-ES',
+        { day: '2-digit', month: 'short', year: 'numeric' });
+      const nameHtml = a.name
+        ? '<span class="name">' + esc(a.name) + '</span>'
+        : '<span class="name unnamed">sin nombre</span>';
+      const usersHtml = a.users.length
+        ? a.users.map(u =>
+            '<span class="chip mono">' + esc(u.email) +
+            '<span class="x" title="Desvincular" onclick="unlink(\\'' +
+            esc(u.userId) + '\\',\\'' + esc(a.speakerId) + '\\')">&times;</span></span>'
+          ).join('')
+        : '<span class="no-users">Sin usuarios vinculados</span>';
+      const macHtml = a.btMac
+        ? '<span class="id-val mono">' + esc(a.btMac) + '</span>'
+        : '<span class="no-users">sin emparejar</span>';
+      return '' +
+      '<div class="assoc" style="animation-delay:' + (i * 0.03) + 's">' +
+        '<div class="assoc-top">' +
+          '<div class="ids">' +
+            nameHtml +
+            '<div class="id-line"><span class="tag">NFC</span>' +
+              '<span class="id-val mono">' + esc(a.nfcUid) + '</span></div>' +
+            '<div class="id-line"><span class="tag">MAC</span>' + macHtml + '</div>' +
+            '<div class="created">Registrado ' + created + '</div>' +
+          '</div>' +
+          '<div class="row-actions">' +
+            '<button class="mini" onclick="editMac(\\'' + esc(a.speakerId) +
+              '\\',\\'' + esc(a.btMac) + '\\')">Editar MAC</button>' +
+            '<button class="mini" onclick="resetTag(\\'' + esc(a.speakerId) +
+              '\\',\\'' + esc(a.nfcUid) + '\\')">Resetear</button>' +
+            '<button class="mini danger" onclick="delSpeaker(\\'' + esc(a.speakerId) +
+              '\\',\\'' + esc(a.nfcUid) + '\\')">Borrar</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="users"><span class="users-label">Usuarios</span>' +
+          usersHtml + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  async function editMac(speakerId, current) {
+    const btMac = prompt('Nueva MAC para este altavoz:', current);
+    if (!btMac || btMac === current) return;
+    try {
+      await api('/admin/api/speaker-mac', {
+        method: 'PUT',
+        body: JSON.stringify({ speakerId, btMac })
+      });
+      loadData();
+    } catch (e) { alert(e.message); }
+  }
+
+  async function resetTag(speakerId, nfc) {
+    if (!confirm('¿Resetear el tag ' + nfc + '?\\n\\n' +
+      'Se desvincularán TODOS sus usuarios y se borrará su MAC, pero el tag ' +
+      'seguirá autorizado y podrá volver a emparejarse.')) return;
+    try {
+      await api('/admin/api/reset-tag', {
+        method: 'POST',
+        body: JSON.stringify({ speakerId })
+      });
+      loadData();
+    } catch (e) { alert(e.message); }
+  }
+
+  async function delSpeaker(speakerId, nfc) {
+    if (!confirm('¿BORRAR por completo el tag ' + nfc + '?\\n\\n' +
+      'Saldrá de la lista blanca y dejará de estar autorizado: ningún usuario ' +
+      'podrá emparejarlo hasta que lo vuelvas a registrar con la app.')) return;
+    try {
+      await api('/admin/api/speaker', {
+        method: 'DELETE',
+        body: JSON.stringify({ speakerId })
+      });
+      loadData();
+    } catch (e) { alert(e.message); }
+  }
+
+  async function unlink(userId, speakerId) {
+    if (!confirm('¿Desvincular este usuario del altavoz?')) return;
+    try {
+      await api('/admin/api/unlink', {
+        method: 'DELETE',
+        body: JSON.stringify({ userId, speakerId })
+      });
+      loadData();
+    } catch (e) { alert(e.message); }
+  }
+
+  document.getElementById('password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+</script>
+</body>
+</html>
