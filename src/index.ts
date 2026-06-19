@@ -31,6 +31,16 @@ app.get("/admin", (req, res) => {
   }
 });
 
+// Política de privacidad (HTML público para Google Play)
+app.get("/privacy", (req, res) => {
+  try {
+    const html = readFileSync(join(process.cwd(), "src", "privacy.html"), "utf-8");
+    res.type("html").send(html);
+  } catch (err) {
+    res.status(500).send("Privacy policy not found");
+  }
+});
+
 // Health check
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
