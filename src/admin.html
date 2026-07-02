@@ -252,8 +252,8 @@
       const usersHtml = a.users.length
         ? a.users.map(u =>
             '<span class="chip mono">' + esc(u.email) +
-            '<span class="x" title="Desvincular" onclick="unlink(\\'' +
-            esc(u.userId) + '\\',\\'' + esc(a.speakerId) + '\\')">&times;</span></span>'
+            '<span class="x" title="Desvincular" onclick="unlink(\'' +
+            esc(u.userId) + '\',\'' + esc(a.speakerId) + '\')">&times;</span></span>'
           ).join('')
         : '<span class="no-users">Sin usuarios vinculados</span>';
       const macHtml = a.btMac
@@ -270,12 +270,12 @@
             '<div class="created">Registrado ' + created + '</div>' +
           '</div>' +
           '<div class="row-actions">' +
-            '<button class="mini" onclick="editMac(\\'' + esc(a.speakerId) +
-              '\\',\\'' + esc(a.btMac) + '\\')">Editar MAC</button>' +
-            '<button class="mini" onclick="resetTag(\\'' + esc(a.speakerId) +
-              '\\',\\'' + esc(a.nfcUid) + '\\')">Resetear</button>' +
-            '<button class="mini danger" onclick="delSpeaker(\\'' + esc(a.speakerId) +
-              '\\',\\'' + esc(a.nfcUid) + '\\')">Borrar</button>' +
+            '<button class="mini" onclick="editMac(\'' + esc(a.speakerId) +
+              '\',\'' + esc(a.btMac) + '\')">Editar MAC</button>' +
+            '<button class="mini" onclick="resetTag(\'' + esc(a.speakerId) +
+              '\',\'' + esc(a.nfcUid) + '\')">Resetear</button>' +
+            '<button class="mini danger" onclick="delSpeaker(\'' + esc(a.speakerId) +
+              '\',\'' + esc(a.nfcUid) + '\')">Borrar</button>' +
           '</div>' +
         '</div>' +
         '<div class="users"><span class="users-label">Usuarios</span>' +
